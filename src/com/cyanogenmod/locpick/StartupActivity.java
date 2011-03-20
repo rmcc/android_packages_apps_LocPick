@@ -27,15 +27,23 @@ public class StartupActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+	// Start Settings' locale picker
 	Intent starterIntent = new Intent();
 	starterIntent.setClassName("com.android.settings","com.android.settings.LocalePickerInSetupWizard");
 	startActivityForResult(starterIntent, 1);
+        // remove this activity from the package manager
+        // after launching the real picker. The LOCALE_CHANGED
+        // intent will cause a HOME activity relaunch, and
+        // we don't want to reappear
+        PackageManager pm = getPackageManager();
+        pm.setApplicationEnabledSetting("com.cyanogenmod.locpick", PackageManager.COMPONENT_ENABLED_STATE_DISABLED, 0);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // remove this activity from the package manager.
+        // remove this activity from the package manager even
+        // if the user abandoned it explicitly
         PackageManager pm = getPackageManager();
         pm.setApplicationEnabledSetting("com.cyanogenmod.locpick", PackageManager.COMPONENT_ENABLED_STATE_DISABLED, 0);
         finish();
